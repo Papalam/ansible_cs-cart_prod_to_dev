@@ -1,0 +1,20 @@
+galaxy_info:
+  author: Vladimir Grushevsky
+  description: Создание дампа данных и архива с сайтом на продакшене
+  company: PAPALAM.RU
+
+  license: MIT
+
+  min_ansible_version: "2.1"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "all"
+    - name: Debian
+      versions:
+        - "all"
+
+  galaxy_tags: []
+
+dependencies: []

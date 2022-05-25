@@ -1,0 +1,6 @@
+---
+- name: Запуск переноса
+  hosts: cs-cart_host
+  roles:
+    - role: build
+      tags: build

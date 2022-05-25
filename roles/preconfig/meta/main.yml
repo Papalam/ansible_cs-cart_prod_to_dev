@@ -1,0 +1,20 @@
+galaxy_info:
+  author: Vladimir Grushevsky
+  description: Подготовка сервера для работы с docker
+  company: PAPALAM.RU
+
+  license: MIT
+
+  min_ansible_version: "2.1"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - "all"
+    - name: Debian
+      versions:
+        - "all"
+
+  galaxy_tags: []
+
+dependencies: []

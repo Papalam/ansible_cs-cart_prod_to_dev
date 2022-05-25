@@ -1,0 +1,6 @@
+[locale]
+127.0.0.1       ansible_connection=local
+
+[remote]
+cs-cart_host    ansible_host=docker-prd01.gkk.guru      ansible_user=root
+maria_db        ansible_host=srv-docker-01.gkk.guru     ansible_user=root

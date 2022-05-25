@@ -1,0 +1,15 @@
+---
+- name: Проверка архивирования
+  hosts: cs-cart_host
+  tasks:
+    - name: Запуск
+      community.general.archive:
+        path: /tmp/del/*
+        dest: /root/PROFI.EXPRESS/test.tgz
+        exclude_path:
+          - /tmp/del/out
+      register: output
+
+    - name: Отладка
+      ansible.builtin.debug:
+        var: output

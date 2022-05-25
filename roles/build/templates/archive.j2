@@ -1,0 +1,3 @@
+#!/bin/bash
+
+tar czf {{ cs_cart.path_archive }}/{{ cs_cart.archive_name }} --exclude='./var/cache/*' --exclude='./var/backups/*' --exclude='./var/files/1/*' ./

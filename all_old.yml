@@ -1,0 +1,50 @@
+---
+- name: Создание инфраструктуры для разработки магазина profi.express
+  hosts: remote
+  tasks:
+    - name: Проверка серверов в сети
+      ansible.builtin.ping:
+
+- name: Получение информации о системе
+  hosts: cs-cart_host
+  tasks:
+    - name: Получение фактов о системе
+      ansible.builtin.debug:
+        var: ansible_facts.os_family
+
+- name: Установка pip
+  hosts: cs-cart_host
+  tasks:
+    - name: pip
+      block:
+        - name: установка pip
+          ansible.builtin.apt:
+            name:
+              - python3-pip
+            state: present
+            update_cache: yes
+            cache_valid_time: 86400
+        - name: Установка pip  пакета
+          ansible.builtin.pip:
+            name: docker
+      when: ansible_facts.os_family == "Debian"
+
+- name: Создание дампа данных
+  hosts: cs-cart_host
+  tasks:
+    - name: Запуск команды на выгрузку дампа
+      community.docker.docker_container_exec:
+        container: mariadb-master
+        command: mysqldump --user=gkkguru --password=varies-abdicate-silly-starve --result-file=dump.sql gkkguru
+        chdir: /other
+
+        #
+        # - name: Копирование данных
+        # ansible.builtin.fetch:
+        # src: /home/docker-container/mariadb_docker/other_data/backup_db.sql
+        # dest: /home/grushevskyv/test/backup_db.sql
+        # dest: ./backup_db.sql
+        # mode: "0644"
+        # remote_src: yes
+        # flat: yes
+      # delegate_to: srv-docker-01

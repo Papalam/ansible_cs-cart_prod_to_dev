@@ -1,0 +1,15 @@
+---
+development:
+  work_dir_path: /Users/v.grushevsky/Documents/dev.profi.express
+  
+production:
+  mysql:
+    docker_name: mariadb-master
+    dump_path: /home/docker-container/mariadb_docker/other_data
+    dump_name: profi_express_dump.sql
+  
+  cs_cart:
+    path_work_dir: /home/docker-container/profi.express/docroot/app/lib/
+    path_archive: /root/PROFI.EXPRESS
+    archive_name: profi_express.tgz
+    
