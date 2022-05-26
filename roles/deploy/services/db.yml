@@ -1,0 +1,51 @@
+---
+- name: Получение контейнера с mariadb
+  community.docker.docker_image:
+    name: mariadb:latest
+    source: pull
+
+- name: Запуск контейнера с БД
+  community.docker.docker_container:
+    name: mariadb
+    image: mariadb:latest
+    env_file: "{{ development.work_dir_path }}/config/db/mariadb.env"
+    volumes:
+      - "{{ development.work_dir_path }}/archive:/other_data"
+      - "{{ development.work_dir_path }}/app/db/mariadb/database:/var/lib/mysql"
+    auto_remove: yes
+    detach: yes
+
+- name: Ожидание запуска контейнера с БД
+  vars:
+    select_db: >-
+      mysql
+      --user=root
+      --password='{{ db_env.MYSQL_ROOT_PASSWORD }}'
+      --skip-column-names
+      --batch
+      --execute="SHOW DATABASES;"
+  community.docker.docker_container_exec:
+    container: mariadb
+    command: "{{ select_db }}"
+  register: result
+  retries: 30
+  delay: 2
+  until: result.stdout_lines | length > 1
+
+- name: Загрузка данных в базу
+  vars:
+    cmd_str: >-
+      mariadb
+      --user=root
+      --password='{{ db_env.MYSQL_ROOT_PASSWORD }}'
+      cscart_db
+      < /other_data/{{ production.mysql.dump_name }}
+  community.docker.docker_container_exec:
+    container: mariadb
+    command: /bin/bash -c "{{ cmd_str }}"
+    chdir: /other_data
+
+- name: Остановка контейнера с БД
+  community.docker.docker_container:
+    name: mariadb
+    state: absent

@@ -3,7 +3,7 @@
   hosts: all
   roles:
     - role: preconfig
-      tags: preconfig
+      tags: never
 
 - name: Разворачиваем окружение для разработки
   hosts: localhost

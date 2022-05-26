@@ -1,0 +1,35 @@
+---
+- name: Работа с архивом
+  block:
+    - name: Разархивируем файлы
+      ansible.builtin.unarchive:
+        src: "{{ development.work_dir_path }}/archive/{{ production.cs_cart.archive_name }}"
+        dest: "{{ development.work_dir_path }}/app/www"
+        remote_src: yes
+  rescue:
+    - name: Запуск копирования архива
+      ansible.builtin.copy:
+        src: "{{ development.work_dir_path }}/archive/{{ production.cs_cart.archive_name }}"
+        dest: "{{ development.work_dir_path }}/app/www"
+        remote_src: yes
+
+    - name: Распаковка файлов
+      ansible.builtin.shell:
+        cmd: "tar -xzvf {{ production.cs_cart.archive_name }}"
+        chdir: "{{ development.work_dir_path }}/app/www"
+
+    - name: Удаляем архив
+      ansible.builtin.file:
+        path: "{{ development.work_dir_path }}/app/www/{{ production.cs_cart.archive_name }}"
+        state: absent
+
+- name: Смена прав доступа на файлы
+  ansible.builtin.shell:
+    cmd: |
+      chown -R 1000:1000 ./
+      chmod 666 config.local.php
+      chmod -R 777 design images var
+      find design -type f -print0 | xargs -0 chmod 666
+      find images -type f -print0 | xargs -0 chmod 666
+      find var -type f -print0 | xargs -0 chmod 666
+    chdir: "{{ development.work_dir_path }}/app/www"
