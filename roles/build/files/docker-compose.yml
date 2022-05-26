@@ -1,0 +1,51 @@
+version: "3"
+services:
+  php:
+    build:
+      dockerfile: Dockerfile
+      context: ./config/php
+    container_name: php
+    volumes:
+    - ./app:/app
+    networks:
+    - dev_network
+
+  nginx:
+    build:
+      dockerfile: Dockerfile
+      context: ./config/nginx
+    container_name: nginx
+    volumes:
+    - ./app:/app
+    ports:
+    - 80:80
+    - 443:443
+    depends_on:
+    - php
+    networks:
+    - dev_network
+
+  redis:
+    image: redis
+    container_name: redis
+    volumes:
+    - ./app/db/redis:/data
+    networks:
+    - dev_network
+
+  db:
+    image: mariadb
+    container_name: mariadb
+    # ports:
+    # - 3306:3306
+    volumes:
+    - ./app/db/mariadb/other_data:/other_data
+    - ./app/db/mariadb/database:/var/lib/mysql
+    env_file: 
+    - ./config/db/mariadb.env
+    networks:
+    - dev_network
+
+networks:
+  dev_network:
+    driver: bridge

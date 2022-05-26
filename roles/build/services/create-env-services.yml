@@ -1,0 +1,9 @@
+---
+- name: Создания окружения для {{ item }}
+  ansible.builtin.file:
+    path: "{{ development.work_dir_path }}/config/{{ item }}"
+    state: directory
+
+- name: Запускаем процесс
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/services/{{ item }}/create.yml"

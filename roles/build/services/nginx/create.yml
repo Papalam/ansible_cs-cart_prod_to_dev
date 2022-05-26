@@ -1,0 +1,31 @@
+---
+- name: Создаем конфигурацию для {{ item }}
+  ansible.builtin.copy:
+    src: "{{ config }}"
+    dest: "{{ development.work_dir_path }}/config/{{ item }}"
+  loop:
+    - conf
+    - Dockerfile
+    - sites
+  loop_control:
+    loop_var: config
+
+- name: Создаем папку для сайта
+  ansible.builtin.file:
+    path: "{{ development.work_dir_path }}/app/www"
+    state: directory
+
+- name: Создаем папку для сертификатов
+  ansible.builtin.file:
+    path: "{{ development.work_dir_path }}/config/{{ item }}/certs"
+    state: directory
+
+- name: Забираем сертификаты с продакшена
+  ansible.builtin.fetch:
+    src: "{{ certificates.path }}/{{ cert_name }}"
+    dest: "{{ development.work_dir_path }}/config/{{ item }}/certs/{{ cert_name }}"
+    flat: yes
+  loop: "{{ certificates.names }}"
+  loop_control:
+    loop_var: cert_name
+  delegate_to: cs-cart_host

@@ -1,6 +1,24 @@
 ---
-- name: Запуск переноса
-  hosts: cs-cart_host
+- name: Настройка окружения
+  hosts: all
+  roles:
+    - role: preconfig
+      tags: preconfig
+
+- name: Разворачиваем окружение для разработки
+  hosts: localhost
   roles:
     - role: build
       tags: build
+
+- name: Запускаем процесс архивирования файлов и базы данных
+  hosts: cs-cart_host
+  roles:
+    - role: dump
+      tags: dump
+
+- name: Запускаем окружение для разработки
+  hosts: localhost
+  roles:
+    - role: deploy
+      tags: deploy

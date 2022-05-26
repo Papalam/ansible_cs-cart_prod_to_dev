@@ -3,8 +3,6 @@
   ansible.builtin.file:
     path: "{{ development.work_dir_path }}"
     state: directory
-  delegate_to: localhost
-  tags: fetch
 
 - name: Создание вспомогательных каталогов
   ansible.builtin.file:
@@ -13,38 +11,20 @@
   loop:
     - app
     - config
-    # - archive
-  delegate_to: localhost
-  tags: fetch
+    - archive
 
-- name: Создание дампа sql
-  community.docker.docker_container_exec:
-    container: "{{ production.mysql.docker_name }}"
-    command: "mysqldump --user={{ mysql.user }} --password={{ mysql.psw }} --result-file={{ production.mysql.dump_name }} gkkguru"
-    chdir: /other
-  tags: dump
-
-- name: Архивирование файлов магазина
-  vars:
-    cmd_str: >-
-      tar czf {{ production.cs_cart.path_archive }}/{{ production.cs_cart.archive_name }}
-      --exclude='./var/cache/*' 
-      --exclude='./var/backups/*' 
-      --exclude='./var/files/1/*' 
-      --exclude='./shiptor_log/1/*'
-      ./
-
-  ansible.builtin.command:
-    cmd: "{{ cmd_str }}"
-    chdir: "{{ production.cs_cart.path_work_dir }}"
-  tags: archiving
-
-- name: Забираем к себе дамп и архив с сайтом
-  ansible.builtin.fetch:
-    src: "{{ item }}"
-    dest: "{{ development.work_dir_path }}/archive/"
-    flat: yes
+- name: Создание сервисов
+  ansible.builtin.include_tasks:
+    file: "{{ role_path }}/services/create-env-services.yml"
   loop:
-    - "{{ production.cs_cart.path_archive }}/{{ production.cs_cart.archive_name }}"
-    - "{{ production.mysql.dump_path }}/{{ production.mysql.dump_name }}"
-  tags: fetch
+    - db
+    - nginx
+    - php
+
+- name: Создание Docker-compose файлов
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ development.work_dir_path }}"
+  loop:
+    - docker-compose.yml
+    - docker-compose.dev.yml

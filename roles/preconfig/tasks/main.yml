@@ -9,4 +9,5 @@
 
 - name: Установка pip пакетов
   ansible.builtin.pip:
-    name: docker
+    name:
+      - docker

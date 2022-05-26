@@ -1,2 +1,52 @@
 ---
-- name: Копирование Dockerfile
+- name: Получение контейнера с mariadb
+  community.docker.docker_image:
+    name: mariadb:latest
+    source: pull
+
+- name: Запуск контейнера с БД
+  community.docker.docker_container:
+    name: mariadb
+    image: mariadb:latest
+    env_file: "{{ development.work_dir_path }}/config/db/mariadb.env"
+    volumes:
+      - "{{ development.work_dir_path }}/archive:/other_data"
+      - "{{ development.work_dir_path }}/app/db/mariadb/database:/var/lib/mysql"
+    auto_remove: yes
+    detach: yes
+
+- name: Ожидание запуска контейнера с БД
+  community.docker.docker_container_info:
+    name: mariadb
+  register: output
+
+- name: Отладка
+  ansible.builtin.debug:
+    var: output.container.State
+
+- name: Ставим на паузу выполнение скрипта
+  ansible.builtin.pause:
+    seconds: 20
+
+# - name: Загрузка данных в базу
+#   vars:
+#     cmd_str: >-
+#       mysql
+#       --user=
+#       --password=
+#       --database=cscart_db
+#       < ./{{ production.mysql.dump_name }}
+#   community.docker.docker_container_exec:
+#     container: mariadb
+#     command: "{{ cmd_str }}"
+#     chdir: /other_data
+#   register: output
+
+# - name: Отладка
+#   ansible.builtin.debug:
+#     var: output
+
+- name: Остановка контейнера с БД
+  community.docker.docker_container:
+    name: mariadb
+    state: absent

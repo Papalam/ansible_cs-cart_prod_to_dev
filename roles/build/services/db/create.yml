@@ -1,0 +1,7 @@
+---
+- name: Создаем конфигурацию для {{ item }}
+  vars:
+    config: "{{ lookup('template', 'db.j2') }}"
+  ansible.builtin.copy:
+    content: "{{ config }}"
+    dest: "{{ development.work_dir_path }}/config/{{ item }}/mariadb.env"

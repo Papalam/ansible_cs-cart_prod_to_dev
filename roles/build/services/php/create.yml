@@ -1,0 +1,10 @@
+---
+- name: Создаем конфигурацию для {{ item }}
+  ansible.builtin.copy:
+    src: "{{ file }}"
+    dest: "{{ development.work_dir_path }}/config/{{ item }}/{{ file }}"
+  loop:
+    - Dockerfile
+    - php-ini-overrides.ini
+  loop_control:
+    loop_var: file

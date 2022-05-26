@@ -1,0 +1,11 @@
+galaxy_info:
+  description: Создание дампа базы данных и архива с интернет-магазином.
+  license: MIT
+  min_ansible_version: '2'
+  platforms:
+    - name: Debian
+      versions:
+        - "all"
+    - name: Ubuntu
+      versions:
+        - "all"
